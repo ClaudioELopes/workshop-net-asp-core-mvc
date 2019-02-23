@@ -11,21 +11,21 @@ namespace SalesWebMvc.Controllers
 {
     public class SellersController : Controller
     {
-        private readonly SellerService _sellerServices;
+        private readonly SellerService _sellerService;
         private readonly DepartmentService _departmentService;
 
 
 
         public SellersController(SellerService sellerService, DepartmentService departmentService)
         {
-            _sellerServices = sellerService;
+            _sellerService = sellerService;
             _departmentService = departmentService;
         }
 
 
         public IActionResult Index()
         {
-            var list = _sellerServices.FindAll();
+            var list = _sellerService.FindAll();
 
             return View(list);
         }
@@ -41,7 +41,30 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Seller seller)
         {
-            _sellerServices.Insert(seller);
+            _sellerService.Insert(seller);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Delete(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+                if(obj == null)
+            {
+                return NotFound();
+            }
+            return View(obj);
+            
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            _sellerService.Remove(id);
             return RedirectToAction(nameof(Index));
         }
     }
